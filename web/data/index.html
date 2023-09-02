@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>esp首页</title>
+    <style>
+        #boll {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #BBBBBB;
+            background: -webkit-linear-gradient(top, #CCCCCC, #FF0000);
+            box-shadow: 0 3px 3px #CCCCCC;
+            text-align: center;
+            line-height: 50px;
+            vertical-align: middle;
+            position: absolute;
+            border-spacing: 4px;
+            margin: 2px;
+        }
+
+        #boll:active {
+            box-shadow: none;
+            background: rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+<div id="boll"></div>
+<div style="width: 80%; margin: auto;text-align: center"><h1 id="board"></h1>
+</div>
+</body>
+<script>
+
+    function getColor() {
+        //产生最大值为0xffffff的随机整数
+        let rand = Number((Math.random() * 0Xffffff).toFixed(0));
+        //转化为16进制
+        rand = rand.toString(16);
+        //短于6位补0在高位
+        while (rand.length < 6) {
+            //字符串加法
+            rand = '0' + rand;
+        }
+        //返回
+        return rand;
+    }
+
+    let boll1 = document.getElementById('boll');
+    let w = window.screen.availWidth - boll1.style.width;
+    let h = window.screen.availHeight - 120;
+    //位移量
+    let x = 0;
+    let y = 0;
+    //分速度
+    let y1 = 0;
+    let v1 = 20;
+    //加速度
+    let a = 2;
+    //初始位置纵坐标
+    let px = boll1.offsetLeft;
+    let py = boll1.offsetTop;
+    //间隔调用移动方法
+    let time1 = setInterval("move()", 50);
+    boll1.onclick = function () {
+        if (y1 < 0) {
+            y1 -= 2;
+        }
+        if (a < 2) {
+            a = 2;
+            y = 40;
+            y1 = 2;
+        }
+        v1 += 4;
+
+    }
+    //方向控制变量
+    let flag = true;
+    let flag1 = true;
+
+    function move() {
+        //碰到底边，改变方向
+        if ((boll1.offsetTop) >= h) {
+
+            flag = false;
+            changeH()
+            if (y1 <= 1) {
+                y1 = 0;
+                a = 0;
+            }
+
+
+        }
+        // 最高点反向
+        if (y1 === 0) {
+            flag = true;
+        }
+        if (flag) {
+            //加速
+            y1 += a;
+            //移动
+            y += y1;
+
+        } else {
+            //减速
+            y1 -= a;
+            y -= y1;
+
+        }
+        // 右碰撞
+        if ((boll1.offsetLeft) > w) {
+            changeW();
+            //碰撞损失速度
+            v1 -= 2;
+            flag1 = false;
+        }
+        //左碰撞
+        if ((boll1.offsetLeft) < 8) {
+            changeW();
+            //碰撞损失速度
+            v1 -= 2;
+            flag1 = true;
+        }
+        if (flag1) {
+            x += v1;
+        } else {
+            x -= v1;
+        }
+        //停止
+        if (v1 === 4 && y1 === 0) {
+            clearInterval(time1);
+            alert("结束了");
+        }
+        move1(x, y);
+    }
+
+    function move1(x, y) {
+        boll1.style.marginLeft = px + x + "px";
+        boll1.style.marginTop = py + y + "px";
+    }
+
+    //上下挤压变形
+    function changeH() {
+        //将其颜色设为当前值
+        boll1.style.background = "-webkit-linear-gradient(top,#" + getColor() + ",#CCCCCC)";
+        change("24px", "35px");
+        //恢复(左右同此)
+        setTimeout('change("30px","30px")', 100);
+    }
+
+    //左右挤压变形
+    function changeW() {
+        //将其颜色设为当前值
+        boll1.style.background = "-webkit-linear-gradient(top," + getColor() + ",#CCCCCC)";
+        change("35px", "24px");
+        setTimeout('change("30px","30px")', 100);
+    }
+
+    function change(h1, w1) {
+        boll1.style.height = h1;
+        boll1.style.width = w1;
+    }
+
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", "/board", false);
+    xhr.send(null);
+    let boardName = document.getElementById('board');
+    boardName.innerHTML = xhr.responseText;
+    console.log(xhr.responseText)
+
+</script>
+</html>
