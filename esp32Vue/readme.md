@@ -1,11 +1,29 @@
 # esp32 vue项目
 需要
 
-* 配置 nodejs npm将web目录的项目build出来。
+* 配置 nodejs npm
 
-* 将dist里面的内容复制到根目录也就是web目录同级别目录下data文件夹中。
+* 构建web 使用platformio 树上的 `Build vue` 会调用npm
 
 * 使用platformio的`Build Filesystem Image`和 `Upload Filesystem Image`
   上传到esp32中。
 
 再烧录esp32的代码。
+
+如果使用cnpm 则修改 platformio.ini中的npm
+
+```
+# 如果使用cnpm 则修改  npm = cnpm
+npm = npm
+```
+
+
+
+使用命令并上传web则是
+
+```shell
+pio run -t buildWeb
+pio run -t buildfs
+pio run -t uploadfs
+```
+
