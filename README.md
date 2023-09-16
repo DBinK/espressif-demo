@@ -27,4 +27,8 @@ esp32 esp8266 示例代码
 
   并含platformio 自定义脚本 自定义task 示例。 用于拓展ci。
   
-  
+
+* [esp32WebSystemInfo](./esp32WebSystemInfo) platformio 集成esp32 整合 vue 项目示例。通过web获取esp32信息，和控制esp32 板载led示例。
+
+  在一个项目基础上整合 UI框架，[**arco design**]([Arco Design Vue](https://arco.design/vue/docs/start))
+
