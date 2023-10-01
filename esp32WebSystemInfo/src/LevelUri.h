@@ -15,7 +15,7 @@ public:
 
     bool canHandle(const String &requestUri, std::vector<String> &pathArgs) override;
 
-Uri * clone() const override;
+    Uri * clone() const override;
 };
 
 

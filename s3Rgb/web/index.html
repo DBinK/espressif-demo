@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>调色板</title>
+    <meta charset="utf-8">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            color: #333333;
+            font-family: '微软雅黑';
+            text-align: center;
+            font-size: 13px;
+        }
+
+        #colors, #palette {
+            margin: 0 auto;
+            width: 300px;
+            height: 40px;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            cursor: pointer;
+        }
+
+        h2 {
+            font-size: 30px;
+            margin: 20px 0px 20px 0px;
+        }
+        span{
+            margin-top: 10px;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .p {
+            left: 135px;
+            position: absolute;
+            width: 0px;
+            height: 0px;
+            border-width: 10px;
+            border-style: solid;
+            border-color: rgba(200, 200, 200, 0.6) rgba(0, 0, 255, 0) rgba(255, 255, 0, 0) rgba(0, 0, 0, 0);
+            transform: scale(1, 4);
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        #result {
+            margin: 0px auto;
+            width: 100px;
+            height: 100px;
+            background-color: #000000;
+            border: 2px solid #60FFC3;
+        }
+
+        .but1 {
+            padding: 2px;
+            margin: 10px;
+            border-radius: 4px;
+            width: 25px;
+            height: 25px;
+            box-shadow: 0px 0px 1px #065ee1;
+            color: #1765da;
+            font-size: 20px;
+            line-height: 20px;
+            vertical-align: middle;
+            display: inline-block;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            cursor: pointer;
+        }
+
+        .but1:visited {
+            border: 1px solid #888888;
+        }
+
+        .but1:active {
+            box-shadow: none;
+            background-color: #FCFCFC;
+        }
+        #reCenter {
+            line-height: 25px;
+            width: 30px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+<h2>调色板</h2>
+<span>点击下面谱带选择色谱位置</span><br>
+
+<div id="point" class="p"></div>
+<canvas id="colors"></canvas><br>
+<div id="left1" class="but1">-</div><span>微调</span>
+<div id="right1" class="but1">+</div><br><br>
+<span>选择浅暗</span>
+<br>
+<div id="point2" class="p"></div>
+<canvas id="palette"></canvas>
+<br>
+<div id="reCenter" class="but1" title="复位浅暗指针">复位</div><br>
+<span>取得的颜色</span>
+<div id="result"></div>
+<p id="p"></p>
+<script type="text/javascript">
+    const arr = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"];
+    //色谱
+    let col = document.getElementById('colors');
+    col.setAttribute("height",col.clientHeight +"px");
+    col.setAttribute("width",col.clientWidth+"px");
+    //色谱标
+    let p = document.getElementById('point');
+    p.style.left = col.offsetLeft - p.clientLeft + "px";
+    //绘制渐变色
+    let cxt = col.getContext("2d");
+    let grd = cxt.createLinearGradient(0, 0, 300, 0);
+    grd.height = col.offsetHeight;
+    grd.addColorStop(0, "#FF0000");
+    grd.addColorStop(0.125, "#FFFF00");
+    grd.addColorStop(0.25, "#00FF00");
+    grd.addColorStop(0.375, "#00FFFF");
+    grd.addColorStop(0.50, "#0000FF");
+    grd.addColorStop(0.625, "#FF00FF");
+    grd.addColorStop(0.75, "#FF0000");
+    grd.addColorStop(0.875, "#FFFFFF");
+    grd.addColorStop(1, "#000000");
+
+    cxt.fillStyle = grd;
+    cxt.fillRect(0, 0, col.offsetWidth, col.offsetHeight);
+
+    //给色谱设置点击事件
+    col.onclick = function (ev) {
+        let x = ev.clientX - (p.clientLeft);
+        p.style.left = x + "px";
+        select1(ev.clientX - col.offsetLeft, ev.clientY - col.offsetTop);
+    }
+
+    //浅暗谱
+    let pal = document.getElementById('palette');
+    pal.setAttribute("height",pal.clientHeight +"px");
+    pal.setAttribute("width",pal.clientWidth+"px");
+    //浅暗标
+    let p2 = document.getElementById('point2');
+    //结果色展示
+    let re = document.getElementById('result');
+    let d = document.getElementById("p");
+    let cxt2 = pal.getContext("2d");
+    //默认指向中部
+    p2.style.left = pal.offsetWidth / 2 + pal.offsetLeft + p2.clientLeft + "px";
+    select1(0, 0);
+    pal.onclick = function (ev) {
+        let x = ev.clientX - (p2.clientLeft);
+        p2.style.left = x + "px";
+        select2(ev.clientX - pal.offsetLeft, ev.clientY - pal.offsetTop);
+    }
+
+    //第一次选择确定基本颜色
+    function select1(x, y) {
+        //得到当前rgb值
+        let c = cxt.getImageData(x, y, 1, 1).data;
+        //清空上次画板
+        cxt2.clearRect(0, 0, pal.offsetWidth, pal.offsetHeight);
+        //用此次选择重绘制
+        let grd3 = cxt.createLinearGradient(0, 0, 300, 0);
+        grd3.addColorStop(0, "#FFFFFF");
+        grd3.addColorStop(0.5, "rgb(" + c[0] + "," + c[1] + "," + c[2] + ")");
+        grd3.addColorStop(1, "#000000");
+        cxt2.fillStyle = grd3;
+        cxt2.fillRect(0, 0, pal.offsetWidth, pal.offsetHeight);
+        //将浅暗标复位
+        p2.style.left = pal.offsetWidth / 2 + pal.offsetLeft - p2.clientLeft / 2 + "px";
+        setResult(c);
+    }
+
+    //第二次选中确定浅暗程度
+    function select2(x, y) {
+        let c = cxt2.getImageData(x, y, 1, 1).data;
+        setResult(c);
+    }
+
+    function setResult(c) {
+        //转十六进制颜色码
+        let hex = "#";
+        for (let i = 0; i < 3; i++) {
+            hex += arr[(c[i] >>> 4) & 15];
+            hex += arr[c[i] & 15];
+        }
+        //显示颜色到结果区域
+        re.style.backgroundColor = hex;
+        let xhr = new XMLHttpRequest();
+        let colorInt = (c[0] << 16) |(c[1] << 8) | (c[2]);
+        xhr.open("GET", "/rgb/" + colorInt);
+        xhr.send();
+        //将颜色值显示到结果区下方
+        d.innerHTML = "rgb(" + c[0] + "," + c[1] + "," + c[2] + ")" + "<br>" + hex;
+    }
+
+    const left1 = document.getElementById('left1');
+    const right1 = document.getElementById('right1');
+    let reCenter = document.getElementById('reCenter');
+    //左移1像素并重新计算结果颜色值
+    left1.onclick = function () {
+        if (p.offsetLeft <= (col.offsetLeft - p.offsetWidth / 2)) {
+            return
+        }
+        p.style.left = p.offsetLeft - 1 + "px";
+        select1(p.offsetLeft - pal.offsetLeft + p.offsetWidth / 2 - 2, 1);
+    }
+    right1.onclick = function () {
+        if (p.offsetLeft >= (col.offsetLeft + col.offsetWidth - p.offsetWidth / 2)) {
+            return
+        }
+        p.style.left = p.offsetLeft + 1 + "px";
+        select1(p.offsetLeft - pal.offsetLeft + p.offsetWidth / 2 - 2, 1);
+    }
+    //复位浅暗指针，将颜色值归为无浅暗调节的值(中心值)
+    reCenter.onclick = function () {
+        p2.style.left = pal.offsetWidth / 2 + pal.offsetLeft - p2.clientLeft / 2 + "px";
+        select2(pal.offsetWidth / 2, 1);
+    }
+</script>
+</body>
+</html>
