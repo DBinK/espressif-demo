@@ -14,10 +14,15 @@ WebServer server(80);
 String *systemInfo = nullptr;
 
 void handleRoot();
+
 void favicon();
+
 void handleAssets();
+
 void handleNotFound();
+
 void getSystemInfo();
+
 void switchLed();
 
 /**
@@ -45,6 +50,10 @@ void setup() {
     info += ESP.getFlashChipMode();
     info += R"(,"flashSpeed":)";
     info += ESP.getFlashChipSpeed();
+#ifdef BOARD_HAS_PSRAM
+    info += R"(,"psramSize":)";
+    info += ESP.getPsramSize();
+#endif
     info += "}";
     systemInfo = &info;
 
@@ -53,6 +62,7 @@ void setup() {
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password);
     Serial.println("");
+    log_i("boardInfo:\n%s", systemInfo->c_str());
 
     // Wait for connection
     while (WiFi.status() != WL_CONNECTED) {
@@ -79,9 +89,10 @@ void setup() {
     server.begin();
     Serial.println("HTTP server started");
     Serial.print("http://");
-    Serial.println(WiFi.localIP().toString());
-    const char *string = WiFi.localIP().toString().c_str();
-    log_i("http://%s",string);
+    const IPAddress &address = WiFi.localIP();
+    Serial.println(address);
+
+    log_i("http://%u.%u.%u.%u", address[0], address[1], address[2], address[3]);
     xTaskCreatePinnedToCore(webTask, "receiveMessage", 10000,
                             NULL, 0, NULL, 0);
     pinMode(LED_BUILTIN, OUTPUT);
@@ -114,6 +125,7 @@ void handleNotFound() {
 
     server.send(404, "text/plain", message);
 }
+
 String getContentType(String filename) {
     if (server.hasArg("download")) {
         return "application/octet-stream";
@@ -141,12 +153,11 @@ String getContentType(String filename) {
         return "application/x-zip";
     } else if (filename.endsWith(".gz")) {
         return "application/x-gzip";
-    } else if (filename.endsWith(".svg")){
+    } else if (filename.endsWith(".svg")) {
         return "image/svg+xml";
     }
     return "text/plain";
 }
-
 
 
 void loop() {
@@ -200,13 +211,13 @@ void handleAssets() {
     handleFile(string.c_str());
 }
 
-void getSystemInfo(){
+void getSystemInfo() {
     server.send(200, "application/json", *systemInfo);
 }
 
-void switchLed(){
+void switchLed() {
     String status = server.pathArg(0);
-    if(!status){
+    if (!status) {
         return;
     }
     int statusInt = status.toInt();

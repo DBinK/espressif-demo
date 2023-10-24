@@ -13,9 +13,7 @@ npm = env.GetProjectOption("npm")
 
 def run_npm(*args, **kwargs):
     print("build web")
-    # 这一句的输出 在platformio的环境下 中文windows系统会遇到 UnicodeEncodeError: 'gbk' codec can't encode character 这个异常
-    # 但不会使主线程失败 后续内容可以运行
-    os.system("cd web && {npm} install && {npm} run build".format(npm=npm))
+    os.system("cd web && {npm} install strip-ansi && {npm} run build >build.log".format(npm=npm))
 
     if os.path.exists("./data"):
         print("remove data")

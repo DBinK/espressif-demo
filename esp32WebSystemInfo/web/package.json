@@ -8,10 +8,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "axios": "^0.27.2",
+    "strip-ansi": "^7.1.0",
     "unplugin-auto-import": "^0.16.6",
     "unplugin-vue-components": "^0.25.2",
-    "vue": "^3.2.45",
-    "axios": "^0.27.2"
+    "vue": "^3.2.45"
   },
   "devDependencies": {
     "@arco-design/web-vue": "^2.51.1",
