@@ -13,8 +13,6 @@ esp32 esp8266 示例代码
 
 * [cam_lcd](./cam_lcd)  esp32使用spi屏幕 st7789显示画面
 
-    
-
 * [TestSPIFFS](./TestSPIFFS) SPIFFS读取入门，使用platformio一键将文件写入flash后从中读取。
 
   platformio esp32 项目data目录使用。 
