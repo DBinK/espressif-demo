@@ -1,21 +1,14 @@
 #include <Arduino.h>
 #include "face_recognize.h"
-
-#ifdef USE_DMA
-uint16_t dmaBuffer1[512]; // Toggle buffer for 16*16 MCU block, 512bytes
-uint16_t dmaBuffer2[512]; // Toggle buffer for 16*16 MCU block, 512bytes
-uint16_t *dmaBufferPtr = dmaBuffer1;
-bool dmaBufferSel = false;
-#endif
-
-// Include the TFT library https://github.com/Bodmer/TFT_eSPI
 #include "SPI.h"
 #include <TFT_eSPI.h>              // Hardware-specific library
 #include <driver/uart.h>
+#include "esp_camera.h"
 
 TFT_eSPI tft = TFT_eSPI();         // Invoke custom library
 
-#include "esp_camera.h"
+
+void onFaceResult(face_recognize_status_t faceRecognizeStatus);
 
 void setup() {
     Serial.begin(115200);
@@ -76,12 +69,13 @@ void setup() {
     sensor_t *s = esp_camera_sensor_get();
     // drop down frame size for higher initial frame rate
     s->set_framesize(s, FRAMESIZE_QVGA);
-    initFaceRecognize();
+
+    initFaceRecognize(onFaceResult);
     Serial.onReceive(serialReceiveTask);
 }
 
 void loop() {
-    camera_fb_t *fb = NULL;
+    camera_fb_t *fb = nullptr;
     log_i("do loop");
     while (true) {
         fb = esp_camera_fb_get();
@@ -91,5 +85,33 @@ void loop() {
         }
         loop(tft, fb);
     }
+}
 
+/**
+ * 当有识别结果的时候 回调此函数
+ * */
+void onFaceResult(face_recognize_status_t faceRecognizeStatus) {
+    log_i("%d", faceRecognizeStatus);
+    switch (faceRecognizeStatus) {
+        case TARGET_FIND:
+            neopixelWrite(RGB_BUILTIN, 255, 255, 0);
+            delay(300);
+            neopixelWrite(RGB_BUILTIN, 0, 0, 0);
+            break;
+        case TARGET_OK:
+            neopixelWrite(RGB_BUILTIN, 0, 223, 0);
+            delay(300);
+            neopixelWrite(RGB_BUILTIN, 0, 0, 0);
+            break;
+        case TARGET_MIS:
+            neopixelWrite(RGB_BUILTIN, 255, 0, 0);
+            delay(300);
+            neopixelWrite(RGB_BUILTIN, 0, 0, 0);
+            break;
+        case NORMAL:
+            neopixelWrite(RGB_BUILTIN, 60, 60, 0);
+            break;
+        default:
+            break;
+    }
 }

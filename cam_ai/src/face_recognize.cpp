@@ -3,10 +3,10 @@
 #include "img_converters.h"
 #include "esp32-hal-log.h"
 
+#include <utility>
 #include <vector>
 #include "human_face_detect_msr01.hpp"
 #include "human_face_detect_mnp01.hpp"
-
 
 #pragma GCC diagnostic ignored "-Wformat"
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
@@ -14,11 +14,26 @@
 #include "face_recognition_tool.hpp"
 #include "face_recognition_112_v1_s8.hpp"
 #include "TFT_eSPI.h"
+#include "face_recognize.h"
 
 #pragma GCC diagnostic error "-Wformat"
 #pragma GCC diagnostic warning "-Wstrict-aliasing"
 
-#define FACE_ID_SAVE_NUMBER 7
+#if (!defined(FACE_ID_SAVE_NUMBER) || FACE_ID_SAVE_NUMBER < 1)
+#define FACE_ID_SAVE_NUMBER 4
+#endif
+
+#ifndef RECOGNITION_ENABLED
+#define RECOGNITION_ENABLED 1
+#endif
+
+#ifndef RECOGNITION_RESULT_QUEUE_MAX_DELAY
+#define RECOGNITION_RESULT_QUEUE_MAX_DELAY 0
+#endif
+
+#ifndef RECOGNITION_RESULT_QUEUE_SIZE
+#define RECOGNITION_RESULT_QUEUE_SIZE 10
+#endif
 
 #define FACE_COLOR_WHITE 0x00FFFFFF
 #define FACE_COLOR_BLACK 0x00000000
@@ -27,7 +42,7 @@
 #define FACE_COLOR_BLUE TFT_BLUE
 #define FACE_COLOR_CYAN TFT_CYAN
 
-static int8_t recognition_enabled = 1;
+static int8_t recognition_enabled = RECOGNITION_ENABLED;
 static int8_t is_enrolling = 0;
 
 FaceRecognition112V1S8 recognizer;
@@ -37,6 +52,12 @@ HumanFaceDetectMNP01 s2(0.5F, 0.3F, 5);
 
 typedef std::list<dl::detect::result_t> DetectResultList;
 
+static QueueHandle_t face_recognize_group = nullptr;
+
+face_recognize_status_t status[RECOGNITION_RESULT_QUEUE_SIZE + 1];
+int currentIndex = 0;
+
+
 extern "C" {
 typedef struct {
     int width;
@@ -45,8 +66,15 @@ typedef struct {
 } frame_buffer;
 }
 
+void sendStatus(face_recognize_status_t state) {
+    status[currentIndex] = state;
+    xQueueSend(face_recognize_group, &status[currentIndex], RECOGNITION_RESULT_QUEUE_MAX_DELAY);
+    currentIndex = (currentIndex + 1) % RECOGNITION_RESULT_QUEUE_SIZE;
+}
+
 static void rgb_print(TFT_eSPI &tft, frame_buffer *fb, uint32_t color, const char *str) {
     tft.setTextColor(color);
+    tft.setTextSize(2);
     tft.drawString(str, (fb->width - (strlen(str) * 14)) / 2, 10);
 }
 
@@ -134,10 +162,13 @@ static int run_face_recognition(TFT_eSPI &tft, frame_buffer *frameBuffer, Detect
 
     face_info_t recognize = recognizer.recognize(tensor, landmarks);
     if (recognize.id >= 0) {
+        sendStatus(TARGET_OK);
         rgb_printf(tft, frameBuffer, FACE_COLOR_GREEN, "ID[%u]: %.2f", recognize.id, recognize.similarity);
     } else {
+        sendStatus(TARGET_MIS);
         rgb_print(tft, frameBuffer, FACE_COLOR_RED, "Intruder Alert!");
     }
+
     return recognize.id;
 }
 
@@ -183,6 +214,8 @@ esp_err_t loop(TFT_eSPI &tft, camera_fb_t *fb) {
                     .data = out_buf
             };
             face_id = run_face_recognition(tft, &frameBuffer, &results);
+        } else {
+            sendStatus(TARGET_FIND);
         }
         draw_face_boxes(tft, out_width, out_height, &results, face_id);
     }
@@ -191,33 +224,68 @@ esp_err_t loop(TFT_eSPI &tft, camera_fb_t *fb) {
     return res;
 }
 
-void initFaceRecognize() {
+/**
+ * 处理识别通过和不通过的事件回调
+ * */
+
+OnRecognizeResult_t onRecognizeResult_;
+
+[[noreturn]] void waitRecognizeResult(void *) {
+    face_recognize_status_t faceRecognizeStatus;
+    for (;;) {
+        if (xQueueReceive(face_recognize_group, &faceRecognizeStatus, portMAX_DELAY)) {
+            onRecognizeResult_(faceRecognizeStatus);
+        }
+    }
+}
+
+void initFaceRecognize(OnRecognizeResult_t onRecognizeResult) {
+    face_recognize_group = xQueueCreate(RECOGNITION_RESULT_QUEUE_SIZE, sizeof(face_recognize_status_t));
+    onRecognizeResult_ = std::move(onRecognizeResult);
     recognizer.set_partition(ESP_PARTITION_TYPE_DATA, ESP_PARTITION_SUBTYPE_ANY, "fr");
     // load ids from flash partition
     recognizer.set_ids_from_flash();
+
+    xTaskCreatePinnedToCore(waitRecognizeResult, "waitRecognizeResult", 8000,
+                            nullptr, 0, nullptr, 0);
 }
 
 void serialReceiveTask() {
-    uint8_t buffer[2] = {};
-    size_t len = Serial.readBytesUntil('\n', buffer, 1);
-    if (len > 0) {
-        switch (buffer[0]) {
+
+    int i = Serial.read();
+    if (i == -1) {
+        return;
+    }
+    auto data = static_cast<uint8_t >(i);
+    if (i > -1) {
+        switch (data) {
             case 'R':
             case 'r':
                 recognition_enabled = 1;
-                log_i("%c\nrecognition enabled", buffer[0]);
+                log_i("%c\nrecognition enabled", data);
                 break;
             case 'd':
             case 'D':
                 recognition_enabled = 0;
-                log_i("%c\nrecognition disabled", buffer[0]);
+                log_i("%c\nrecognition disabled", data);
                 break;
             case 'e':
             case 'E':
                 is_enrolling = 1;
-                log_i("%c\nenrolling enabled", buffer[0]);
+                log_i("%c\nenrolling enabled", data);
+                break;
+            case '\r':
+            case '\n':
+            case '\t':
+            case ' ':
                 break;
             default:
+                log_e("Invalid value[%c]\n"
+                      "your can use:\n"
+                      "'e' or 'E' :enrolling enable\n"
+                      "'r' or 'R' :recognition enable\n"
+                      "'d' or 'D' :recognition disable\n",
+                      data);
                 break;
         }
     }
