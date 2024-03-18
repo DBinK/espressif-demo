@@ -186,6 +186,7 @@ esp_err_t loop(TFT_eSPI &tft, camera_fb_t *fb) {
     if (!out_buf) {
         log_e("out_buf malloc failed");
         res = ESP_FAIL;
+        esp_camera_fb_return(fb);
         return res;
     }
     size_t len = fb->len;
@@ -194,6 +195,7 @@ esp_err_t loop(TFT_eSPI &tft, camera_fb_t *fb) {
         free(out_buf);
         log_e("To rgb888 failed");
         res = ESP_FAIL;
+        esp_camera_fb_return(fb);
         return res;
     }
     DetectResultList &candidates = s1.infer(
