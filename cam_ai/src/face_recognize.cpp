@@ -176,44 +176,24 @@ static int run_face_recognition(TFT_eSPI &tft, frame_buffer *frameBuffer, Detect
 esp_err_t loop(TFT_eSPI &tft, camera_fb_t *fb) {
     esp_err_t res = ESP_OK;
     int face_id;
-    size_t out_len, out_width, out_height;
-    uint8_t *out_buf;
-    face_id = 0;
-    out_len = fb->width * fb->height * 3;
+    size_t out_width, out_height;
     out_width = fb->width;
     out_height = fb->height;
-    out_buf = (uint8_t *) malloc(out_len);
-    if (!out_buf) {
-        log_e("out_buf malloc failed");
-        res = ESP_FAIL;
-        esp_camera_fb_return(fb);
-        return res;
-    }
-    size_t len = fb->len;
-    // 转rgb888之后检测， 如果转rgb565检测需要将infer 第一个参数转为uint16指针
-    if (!fmt2rgb888(fb->buf, len, fb->format, out_buf)) {
-        free(out_buf);
-        log_e("To rgb888 failed");
-        res = ESP_FAIL;
-        esp_camera_fb_return(fb);
-        return res;
-    }
-    DetectResultList &candidates = s1.infer(
-            (uint8_t *) out_buf, {(int) out_height, (int) out_width, 3});
-    DetectResultList &results = s2.infer(
-            (uint8_t *) out_buf, {(int) out_height, (int) out_width, 3}, candidates);
 
-    jpg2rgb565(fb->buf, len, out_buf, JPG_SCALE_NONE);
-    esp_camera_fb_return(fb);
+    face_id = 0;
+    DetectResultList &candidates = s1.infer(
+            (uint16_t *) fb->buf, {(int) out_height, (int) out_width, 3});
+    DetectResultList &results = s2.infer(
+            (uint16_t *) fb->buf, {(int) out_height, (int) out_width, 3}, candidates);
     tft.startWrite();
-    tft.pushImage(0, 0, TFT_HEIGHT, TFT_WIDTH, (uint16_t *) out_buf);
+    tft.pushImage(0, 0, TFT_HEIGHT, TFT_WIDTH, (uint16_t *) fb->buf);
     // 如果检测到了人脸会识别 并框选人脸
     if (!results.empty()) {
         if (recognition_enabled) {
             frame_buffer frameBuffer = {
                     .width = static_cast<int>(out_width),
                     .height = static_cast<int>(out_height),
-                    .data = out_buf
+                    .data = fb->buf
             };
             face_id = run_face_recognition(tft, &frameBuffer, &results);
         } else {
@@ -221,8 +201,8 @@ esp_err_t loop(TFT_eSPI &tft, camera_fb_t *fb) {
         }
         draw_face_boxes(tft, out_width, out_height, &results, face_id);
     }
+    esp_camera_fb_return(fb);
     tft.endWrite();
-    free(out_buf);
     return res;
 }
 
