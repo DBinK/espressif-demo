@@ -62,7 +62,7 @@ extern "C" {
 typedef struct {
     int width;
     int height;
-    uint8_t *data;
+    uint16_t *data;
 } frame_buffer;
 }
 
@@ -147,20 +147,17 @@ draw_face_boxes(TFT_eSPI &tft, size_t out_width, size_t out_height, DetectResult
 static int run_face_recognition(TFT_eSPI &tft, frame_buffer *frameBuffer, DetectResultList *results) {
     std::vector<int> landmarks = results->front().keypoint;
     int id = -1;
-
-    Tensor<uint8_t> tensor;
-    tensor.set_element((uint8_t *) frameBuffer->data).set_shape(
-            {frameBuffer->height, frameBuffer->width, 3}).set_auto_free(false);
+    std::vector<int> shape = {frameBuffer->height, frameBuffer->width, 3};
 
     int enrolled_count = recognizer.get_enrolled_id_num();
 
     if (enrolled_count < FACE_ID_SAVE_NUMBER && is_enrolling) {
-        id = recognizer.enroll_id(tensor, landmarks, "", true);
+        id = recognizer.enroll_id(frameBuffer->data, shape, landmarks, "", true);
         log_i("Enrolled ID: %d", id);
         rgb_printf(tft, frameBuffer, FACE_COLOR_CYAN, "ID[%u]", id);
     }
 
-    face_info_t recognize = recognizer.recognize(tensor, landmarks);
+    face_info_t recognize = recognizer.recognize(frameBuffer->data, shape, landmarks);
     if (recognize.id >= 0) {
         sendStatus(TARGET_OK);
         rgb_printf(tft, frameBuffer, FACE_COLOR_GREEN, "ID[%u]: %.2f", recognize.id, recognize.similarity);
@@ -193,7 +190,7 @@ esp_err_t loop(TFT_eSPI &tft, camera_fb_t *fb) {
             frame_buffer frameBuffer = {
                     .width = static_cast<int>(out_width),
                     .height = static_cast<int>(out_height),
-                    .data = fb->buf
+                    .data = reinterpret_cast<uint16_t *>(fb->buf)
             };
             face_id = run_face_recognition(tft, &frameBuffer, &results);
         } else {
