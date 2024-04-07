@@ -2,7 +2,7 @@
 
 这里使用Freenove ESP32-S3-WROOM Board 在国内叫做ESP32-S3 WROOM N16R8 CAM。
 
-此代码基于 arduino-esp32 v2.0.14 基于 ESP-IDF v4.4.6。由于i2s相关api并未在arduino api层体现，这里使用的依然是idf api。在后续idf 5.x版本会发生变化。
+此代码基于 arduino-esp32 v2.0.14 基于 ESP-IDF v4.4.6。这里使用的i2s依然是idf api,在后续idf 5.x版本会发生变化。
 
 ## SD卡 
 
