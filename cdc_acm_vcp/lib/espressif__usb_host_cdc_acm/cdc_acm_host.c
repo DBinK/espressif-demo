@@ -980,11 +980,8 @@ const usb_device_desc_t * cdc_acm_host_get_desc(cdc_acm_dev_hdl_t cdc_hdl)
 {
     assert(cdc_hdl);
     cdc_dev_t *cdc_dev = (cdc_dev_t *)cdc_hdl;
-
     const usb_device_desc_t *device_desc;
-
     ESP_ERROR_CHECK_WITHOUT_ABORT(usb_host_get_device_descriptor(cdc_dev->dev_hdl, &device_desc));
-    usb_print_device_descriptor(device_desc);
     return device_desc;
 }
 /**
