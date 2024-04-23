@@ -41,9 +41,7 @@ esp32 esp8266 示例代码
 
 * [i2s_recorder](./i2s_recorder) ESP32-S3-WROOM CAM +  INMP441 i2s标准模式 录音到sd卡。
 
-* [cdc_acm_vcp](./cdc_acm_vcp) esp32 USB驱动串口转USB芯片。
-
-  也就是只预留USB转串口芯片的usb接口情况下，可以使用esp32的USB与其通讯。或者用于省去复杂接线使用esp32 USB直插设备串口-USB接口查看设备串口打印。
+* [cdc_acm_vcp](./cdc_acm_vcp) esp32 USB驱动串口转USB芯片,场景如下:
 
   ```mermaid
   graph LR
