@@ -1,7 +1,5 @@
 # CDC ACM VCP
-USB驱动串口转USB芯片。也就是只预留USB转串口芯片的usb接口情况下，可以使用esp32的USB与其通讯。
-
-或者用于省去复杂接线。
+USB驱动串口转USB芯片。场景如下:
 
 ```mermaid
 graph LR
