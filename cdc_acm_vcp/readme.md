@@ -8,7 +8,7 @@ graph LR
   end
 
  subgraph 设备
-  DeviceUSBSerial[USB-Serial/ch340]
+  DeviceUSBSerial[FT23x/ch34x/CP210x]
   URAT[设备的串口]
 end
   USB <-->|Nested Connection| DeviceUSBSerial
