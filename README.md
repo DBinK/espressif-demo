@@ -40,3 +40,30 @@ esp32 esp8266 示例代码
 * [cam_ai](./cam_ai) ESP32-S3-WROOM CAM + ST7789 人脸检测+识别
 
 * [i2s_recorder](./i2s_recorder) ESP32-S3-WROOM CAM +  INMP441 i2s标准模式 录音到sd卡。
+
+* [cdc_acm_vcp](./cdc_acm_vcp) esp32 USB驱动串口转USB芯片。
+
+  也就是只预留USB转串口芯片的usb接口情况下，可以使用esp32的USB与其通讯。或者用于省去复杂接线使用esp32 USB直插设备串口-USB接口查看设备串口打印。
+
+  ```mermaid
+  graph LR
+    subgraph ESP32-S3
+      USB[USB]
+    end
+  
+   subgraph 设备
+    DeviceUSBSerial[USB-Serial/ch340]
+    URAT[设备的串口]
+  end
+    USB <-->|Nested Connection| DeviceUSBSerial
+  DeviceUSBSerial <--> URAT
+    classDef Default_ fill:#f6f6f6,stroke:#333,stroke-width:1px;
+    classDef nested fill:#e9e9e9,stroke:#333,stroke-width:1px;
+  
+    class ESP32-S3, Default_
+    class Device, Default_
+    class DeviceUSBSerial, nested
+  
+  ```
+
+  
