@@ -65,3 +65,29 @@ esp32 esp8266 示例代码
   ```
 
   
+
+* [cdc_acm_vcp_monitor](./cdc_acm_vcp_monitor) esp32 USB串口查看器。
+
+  类似于PC查看串口，直插usb查看串口。
+
+```mermaid
+graph LR
+  subgraph ESP32-S3
+    USB[USB]
+    
+  end
+	i2cs[SSD1306屏幕]
+ subgraph 设备
+  DeviceUSBSerial[FT23x/ch34x/CP210x]
+  URAT[设备的串口]
+end
+DeviceUSBSerial -->|设备的串口数据|USB 
+URAT --> DeviceUSBSerial
+ESP32-S3 -->|i2c 打印日志| i2cs
+classDef Default_ fill:#f6f6f6,stroke:#333,stroke-width:1px;
+classDef nested fill:#e9e9e9,stroke:#333,stroke-width:1px;
+
+class ESP32-S3, Default_
+class Device, Default_
+class DeviceUSBSerial, nested
+```
