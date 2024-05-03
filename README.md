@@ -74,7 +74,7 @@ esp32 esp8266 示例代码
 graph LR
   subgraph ESP32-S3
     USB[USB]
-    
+    I2C
   end
 	i2cs[SSD1306屏幕]
  subgraph 设备
@@ -83,7 +83,7 @@ graph LR
 end
 DeviceUSBSerial -->|设备的串口数据|USB 
 URAT --> DeviceUSBSerial
-ESP32-S3 -->|i2c 打印日志| i2cs
+I2C -->|i2c 打印日志| i2cs
 classDef Default_ fill:#f6f6f6,stroke:#333,stroke-width:1px;
 classDef nested fill:#e9e9e9,stroke:#333,stroke-width:1px;
 
