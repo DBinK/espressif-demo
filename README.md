@@ -91,3 +91,11 @@ class ESP32-S3, Default_
 class Device, Default_
 class DeviceUSBSerial, nested
 ```
+
+* [80211raw](./80211raw)  esp32 对 esp32 使用80211帧通讯。
+
+  类似于espnow无需建立sta ap 连接场景， 直接对空中发包和接受空中wifi帧来通讯的方式。
+
+  但相比于espnow可以有更大的报文长度和更高的带宽。无需使用真实mac地址，可以事先约定源和目标地址，结合编写适当过滤规则即可通讯。
+
+  同时espnow本质也是一种特定的80211中的帧。
