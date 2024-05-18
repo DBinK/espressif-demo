@@ -99,3 +99,7 @@ class DeviceUSBSerial, nested
   但相比于espnow可以有更大的报文长度和更高的带宽。无需使用真实mac地址，可以事先约定源和目标地址，结合编写适当过滤规则即可通讯。
 
   同时espnow本质也是一种特定的80211中的帧。
+
+* [algorithm](./algorithm) 算法，主要是安全相关的算法库使用，包括哈希，加密，和密钥协商算法。
+  * [encryption](./encryption/encryption) 加密算法 
+  * [hash](./encryption/hash) 哈希算法 MD5 /SHA256
