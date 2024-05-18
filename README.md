@@ -101,5 +101,5 @@ class DeviceUSBSerial, nested
   同时espnow本质也是一种特定的80211中的帧。
 
 * [algorithm](./algorithm) 算法，主要是安全相关的算法库使用，包括哈希，加密，和密钥协商算法。
-  * [encryption](./encryption/encryption) 加密算法 
-  * [hash](./encryption/hash) 哈希算法 MD5 /SHA256
+  * [encryption](./algorithm/hash/encryption) 加密算法 
+  * [hash](./algorithm/hash/hash) 哈希算法 MD5 /SHA256
