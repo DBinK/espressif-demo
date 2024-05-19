@@ -91,7 +91,7 @@ widows下可以从这里下载vlc[Download official VLC media player for Windows
 
 
 
-上一步在127.0.0.1的8554端口监听,将以下内容复杂新建一个后缀为sdp的文件如`play.sdp`。
+上一步在127.0.0.1的8554端口监听,将以下内容复制新建一个后缀为sdp的文件如`play.sdp`。
 
 ```ini
 m=video 8554 RTP/AVP 96
