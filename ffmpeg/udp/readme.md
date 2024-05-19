@@ -4,8 +4,8 @@ graph LR
 esp32[esp32]
 ffmpeg[ffmpeg]
 vlc[vlc]
-esp32 --mjpeg(over udp)--> ffmpeg 
-ffmpeg--rtp(h.264)--> vlc
+esp32 -->|"mjpeg over udp"|ffmpeg 
+ffmpeg-->|"rtp h.264"|vlc
 ```
 
 目前的esp32无视频编码能力，可以将jpeg发给ffmpeg以h.264通过rtp推送，可以一定程度减少带宽占用。
