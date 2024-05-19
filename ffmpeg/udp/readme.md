@@ -4,7 +4,8 @@ graph LR
 esp32[esp32]
 ffmpeg[ffmpeg]
 vlc[vlc]
-esp32 --mjpeg(over udp)--> ffmpeg --rtp(h.264)--> vlc
+esp32 --|mjpeg(over udp)--> ffmpeg 
+ffmpeg--rtp(h.264)--> vlc
 ```
 
 目前的esp32无视频编码能力，可以将jpeg发给ffmpeg以h.264通过rtp推送，可以一定程度减少带宽占用。
@@ -13,8 +14,7 @@ esp32 --mjpeg(over udp)--> ffmpeg --rtp(h.264)--> vlc
 
 ### 编译说明
 
-* 修改platformio里 common下的wifi的ssid和密码
-* 修改main.cpp中 服务端的地址，也就是运行ffmpeg的pc的局域网ip。
+* 修改platformio里 common下的wifi的ssid和密码;以及服务端的地址`host`，也就是运行ffmpeg的pc的局域网ip。
 
 #### 支持的开发板
 
