@@ -4,7 +4,7 @@ graph LR
 esp32[esp32]
 ffmpeg[ffmpeg]
 vlc[vlc]
-esp32 --|mjpeg(over udp)--> ffmpeg 
+esp32 --mjpeg(over udp)--> ffmpeg 
 ffmpeg--rtp(h.264)--> vlc
 ```
 
