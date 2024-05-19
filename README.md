@@ -103,3 +103,7 @@ class DeviceUSBSerial, nested
 * [algorithm](./algorithm) 算法，主要是安全相关的算法库使用，包括哈希，加密，和密钥协商算法。
   * [encryption](./algorithm/encryption) 加密算法 
   * [hash](./algorithm/hash) 哈希算法 MD5 /SHA256
+
+* [ffmpeg](./ffmpeg) esp32推送mjpeg给ffmpeg编码后推流例程。
+
+  esp32通过udp/tcp推送jpeg帧给ffmpeg,ffmpeg以h.264编码后以rtp推流，再使用vlc等播放器播放rtp流。

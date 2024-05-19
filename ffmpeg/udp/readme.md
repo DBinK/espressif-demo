@@ -14,8 +14,49 @@ esp32 --mjpeg(over udp)--> ffmpeg --rtp(h.264)--> vlc
 ### 编译说明
 
 * 修改platformio里 common下的wifi的ssid和密码
-
 * 修改main.cpp中 服务端的地址，也就是运行ffmpeg的pc的局域网ip。
+
+#### 支持的开发板
+
+添加了四个烧录配置，可以在platformio切换具体环境烧录。
+
+- esp32cam
+
+  烧录时选择环境 `esp32cam`
+
+- 合宙esp32s3
+
+  烧录时选择环境 `air_mem_s3`
+
+- esp32-wrover-cam
+
+  [freenove-esp32-wrover-cam](https://gitee.com/link?target=https%3A%2F%2Frandomnerdtutorials.com%2Fgetting-started-freenove-esp32-wrover-cam%2F)
+
+  烧录时选择环境 `esp32-wrover-cam`
+
+- Freenove ESP32-S3-WROOM Board 某宝叫做 ESP32-S3 WROOM N16R8 CAM
+
+  [Freenove/Freenove_ESP32_S3_WROOM_Board: Apply to FNK0085 (github.com)](https://gitee.com/link?target=https%3A%2F%2Fgithub.com%2FFreenove%2FFreenove_ESP32_S3_WROOM_Board)
+
+  烧录时选择环境 `s3_wroom_cam`
+
+#### 烧录
+
+#####  使用vscode烧录
+
+![image-20240419231141512](https://gitee.com/yunyizhi/light-nodes/raw/master/LightCam/pic/image-20240419231141512.png)
+
+##### 使用clion 烧录
+
+clion的platformio plus插件可以不用切换环境，可以勾选进行烧录。
+
+![image-20240419225414049](https://gitee.com/yunyizhi/light-nodes/raw/master/LightCam/pic/image-20240419225414049.png)
+
+##### 使用命令行烧录：
+
+例如需要为esp32cam编译并上传，在项目文件夹命令运行`pio run -t upload -e esp32cam`
+
+-e表示 指定environment 。platformio.ini 配置为[env:xxx]的选项中xxx 为这里`-e`后 的参数。
 
 ### 安装ffmpeg
 
@@ -69,4 +110,4 @@ c=IN IP4 127.0.0.1
 
 
 
-如果需要走局域网，则需要改rtp的ip为局域网ip。
+如果需要走局域网，则需要改rtp的ip为局域网ip，同理sdp里面的ip也一并变化。
