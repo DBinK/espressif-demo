@@ -107,3 +107,5 @@ class DeviceUSBSerial, nested
 * [ffmpeg](./ffmpeg) esp32推送mjpeg给ffmpeg编码后推流例程。
 
   esp32通过udp/tcp推送jpeg帧给ffmpeg,ffmpeg以h.264编码后以rtp推流，再使用vlc等播放器播放rtp流。
+
+* [data_time](./date_time) 日期和时间，esp32和esp8266使用ntp对时成功后并本地获取时间格式化打印。
