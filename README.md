@@ -41,6 +41,8 @@ esp32 esp8266 示例代码
 
 * [cam_ai](./cam_ai) ESP32-S3-WROOM CAM + ST7789 人脸检测+识别
 
+* [idf_mpu6050](./idf_mpu6050) 使用idf组件库里的MPU6050库,读取加速度，陀螺仪参数和温度的例程。
+
 * [i2s_recorder](./i2s_recorder) ESP32-S3-WROOM CAM +  INMP441 i2s标准模式 录音到sd卡。
 
 * [cdc_acm_vcp](./cdc_acm_vcp) esp32 USB驱动串口转USB芯片,场景如下:
