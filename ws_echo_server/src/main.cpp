@@ -206,8 +206,7 @@ void app_main()
 void setup() {
     app_main();
     if (MDNS.begin(ESP32_SEVER_HOST_NAME)) {
-        Serial.println("MDNS responder started");
-        log_i("MDNS responder started");
+        ESP_LOGI(TAG, "MDNS responder started");
     }
 // write your initialization code here
 }
