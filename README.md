@@ -21,6 +21,8 @@ esp32 esp8266 示例代码
 
 * [web](./web)  esp32 使用静态html文件的web服务。
 
+* [ws_echo_server](./ws_echo_server) websocket server 移植于esp-idf ws_echo_server。本身已经包含http server无需再使用额外的http服务。
+
 * [esp32Vue](./esp32Vue) platformio 集成esp32 整合 vue 项目示例。
 
   需要nodejs npm环境。
