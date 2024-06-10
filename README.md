@@ -113,3 +113,11 @@ class DeviceUSBSerial, nested
   esp32通过udp/tcp推送jpeg帧给ffmpeg,ffmpeg以h.264编码后以rtp推流，再使用vlc等播放器播放rtp流。
 
 * [data_time](./date_time) 日期和时间，esp32和esp8266使用ntp对时成功后并本地获取时间格式化打印。
+
+  
+
+* [mpu6050_view](./mpu6050_view) esp32作为web服务端，提供web通过3d视图显示mpu6050的状态
+
+  ![6050 3d](./mpu6050_view/demo.png)
+
+ 
