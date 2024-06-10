@@ -4,10 +4,10 @@
 
 #include <Arduino.h>
 
-const char *const webSrc[] = {
+const char* const webSrc[] = {
         "/index.html",
         "/vite.svg",
-        "/assets/index--whTxLwS.js",
+        "/assets/index-Be8Fl4oq.js",
         "/assets/index-CMDX60TJ.css",
         "/model/plane.obj"
 };

@@ -41,7 +41,11 @@ class WsClient {
 
     connected() {
         this.setStatusShow();
-        return this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING);
+        let b = this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING);
+        if(b && this.socket.readyState === WebSocket.OPEN) {
+            this.send("");
+        }
+        return b;
     }
 
 

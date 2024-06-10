@@ -62,9 +62,10 @@ void setup() {
 }
 
 void reinitMpu6050() {
-    mpu6050_delete(mpu6050);
-    ESP_ERROR_CHECK(i2c_driver_delete(I2C_MASTER_NUM));
-    i2c_sensor_mpu6050_init();
+//    mpu6050_delete(mpu6050);
+//    ESP_ERROR_CHECK(i2c_driver_delete(I2C_MASTER_NUM));
+//    i2c_sensor_mpu6050_init();
+    ESP.restart();
 }
 
 void loop() {
