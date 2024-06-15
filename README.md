@@ -121,3 +121,5 @@ class DeviceUSBSerial, nested
   ![6050 3d](./mpu6050_view/demo.png)
 
  
+
+* [newPio](./newPio) 在PIO使用新版的arduino平台(目前3.0.1) 支持esp32c6和esp32h2等，该项目未配置esp32h2可以参考esp32c6的配置对照编写一份h2的项目。
