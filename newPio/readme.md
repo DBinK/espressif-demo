@@ -8,6 +8,7 @@
 ## 注意
 * 这里依然不能新建项目，需要复制platformio.ini到新的文件夹。
 接下来打开项目
+
     1.使用`platformio.exe init --ide vscode` 初始化项目，然后使用vscode打开。
 
     2.或者使用clion打开项目时候自动同步platformio.ini。
