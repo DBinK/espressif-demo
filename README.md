@@ -112,6 +112,9 @@ class DeviceUSBSerial, nested
 
   esp32通过udp/tcp推送jpeg帧给ffmpeg,ffmpeg以h.264编码后以rtp推流，再使用vlc等播放器播放rtp流。
 
+
+* [hid_host](./hid_host) esp32 作为HID主机，可使用鼠标和键盘对esp32输入.
+
 * [data_time](./date_time) 日期和时间，esp32和esp8266使用ntp对时成功后并本地获取时间格式化打印。
 
   
