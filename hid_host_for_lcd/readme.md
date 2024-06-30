@@ -12,5 +12,7 @@
     -D TFT_RST=-1
 ```
  MOSI  对应 SDA
+
  SCLK 对应 SCL
+
  RST 接 EN
