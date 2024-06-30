@@ -115,6 +115,8 @@ class DeviceUSBSerial, nested
 
 * [hid_host](./hid_host) esp32 作为HID主机，可使用鼠标和键盘对esp32输入.
 
+* [hid_host_for_lcd](./hid_host_for_lcd) esp32 作为HID主机，可使用键盘输入，显示到lcd.
+
 * [data_time](./date_time) 日期和时间，esp32和esp8266使用ntp对时成功后并本地获取时间格式化打印。
 
   
