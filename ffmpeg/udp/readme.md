@@ -111,3 +111,17 @@ c=IN IP4 127.0.0.1
 
 
 如果需要走局域网，则需要改rtp的ip为局域网ip，同理sdp里面的ip也一并变化。
+
+
+
+
+
+## 其他附加
+
+### ffmpeg录制esp32视频
+
+```bash
+ffmpeg -re -f mjpeg -i udp://0.0.0.0:8004 -c:v libx264 -preset medium -crf 23 output.mp4
+```
+
+`-crf 23`是一个常见的恒定速率因子值，用于平衡文件大小和质量。较低的CRF值意味着更高的质量和更大的文件大小。
