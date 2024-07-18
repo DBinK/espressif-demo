@@ -128,4 +128,5 @@ class DeviceUSBSerial, nested
  
 
 * [newPio](./newPio) 在PIO使用新版的arduino平台(目前3.0.1) 支持esp32c6和esp32h2等，该项目未配置esp32h2可以参考esp32c6的配置对照编写一份h2的项目。
+* [usb_camera](./usb_camera) esp32 s3 驱动usb摄像头 推流例程。
 * [usb_host_msc](./usb_host_msc) esp32作为主机读写U盘或其他MSC设备。
