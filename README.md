@@ -37,6 +37,9 @@ esp32 esp8266 示例代码
 
   在一个项目基础上整合 UI框架，[**arco design**]([Arco Design Vue](https://arco.design/vue/docs/start))
 
+
+* [esp_now_to_linux](./esp_now_to_linux) esp32 通过espnow遥控 linux设备
+
 * [s3Rgb](./s3Rgb) ESP32-S3-DevKitC-1 板载RGB灯示例,web控制rgb颜色
 
 * [cam_ai](./cam_ai) ESP32-S3-WROOM CAM + ST7789 人脸检测+识别
