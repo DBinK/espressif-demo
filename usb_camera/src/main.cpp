@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "usb_camera_mic_spk.h"
+#include "usb_camera.h"
 #include "esp_camera.h"
 #include "udp/UdpClient.hpp"
 
