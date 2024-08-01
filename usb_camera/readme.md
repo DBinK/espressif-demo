@@ -1,6 +1,6 @@
 # 驱动usb摄像头推流
 
-esp32 s3 usb摄像头推流
+esp32s2/esp32s3 usb摄像头推流
 
 ```mermaid
 graph LR
@@ -36,7 +36,13 @@ ffmpeg-->|"rtp h.264"|vlc
 
 #### 开发板
 
-esp32s3 n16 r8. 这里用到psram缓存帧，否则udp发送会报 12内存不够。代码已经固定为使用psram申请帧，请使用带psram的s3。
+这里需要OTG功能，需要s3或者s2。
+
+这里用到psram缓存帧，否则udp发送会报 12内存不够。代码已经固定为使用psram申请帧，请使用带psram的s2/s3，但实际使用的psram也不需要特别大。
+
+这里使用常规esp32s3 带psram的版本 使用devkit-c造型板子测试OK。
+
+s2使用了s2 mini开发板测试ok,这里用的是带2M PSRAM的版本，其使用`ESP32-S2FN4R2`芯片。
 
 
 
@@ -50,6 +56,21 @@ wifi_ssid = \"test0\"
 wifi_password = \"12345687\"
 host = \"192.168.0.121\"
 ```
+
+platformio.ini中存在两个env,`esp32-s3-devkitc-1` 和 `lolin_s2_mini`  
+
+根据对应的板子选择对应的env。如果不清楚在单个platformio.ini里面存在多个配置情况如何烧录时指定env可以参考LightCam中烧录说明。[LightCam 烧录说明](https://gitee.com/yunyizhi/light-nodes/tree/master/LightCam#使用vscode烧录)
+
+
+#### s2 mini的说明
+
+s2 mini没有板载自动下载电路，是走otg cdc下载，无法进入自动进入下载模式，需要按住io0上的按钮之后rst一次，使得s2上电时检测io0为低，以下载模式启动，就可以松开手。
+
+烧录进度100% 不会自动重启，这里可以手动按rst重启，不过当前下一步操作可能会掉电一次，可能不用额外手动重启。
+
+s2 mini烧录完成后，拔下usb与电脑的连接，这里外接摄像头，供电我们可以使用VBUS引脚 和GND以5V供电。
+
+
 
 ### 安装ffmpeg
 
