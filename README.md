@@ -111,9 +111,11 @@ class DeviceUSBSerial, nested
   * [encryption](./algorithm/encryption) 加密算法 
   * [hash](./algorithm/hash) 哈希算法 MD5 /SHA256
 
-* [ffmpeg](./ffmpeg) esp32推送mjpeg给ffmpeg编码后推流例程。
+* [ffmpeg](./ffmpeg) esp32推送音频或视频与ffmpeg交互的例子。
 
-  esp32通过udp/tcp推送jpeg帧给ffmpeg,ffmpeg以h.264编码后以rtp推流，再使用vlc等播放器播放rtp流。
+  esp32通过udp推送jpeg帧给ffmpeg,ffmpeg以h.264编码后以rtp推流，再使用vlc等播放器播放rtp流。
+  
+  esp32录音推送PCM数据给ffplay播放。
 
 
 * [hid_host](./hid_host) esp32 作为HID主机，可使用鼠标和键盘对esp32输入.
