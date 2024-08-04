@@ -30,7 +30,7 @@ void connectWifi(const char *ssid, const char *passphrase) {
 
 void setup() {
     I2S.setAllPins(CONF_I2S_SCK, CONF_I2S_FS, CONF_I2S_SD, -1, -1);
-    if (!I2S.begin(PDM_MONO_MODE, CONFIG_SAMPLE_RATE, CONFIG_SAMPLE_BITS)) {
+    if (!I2S.begin(I2S_LEFT_JUSTIFIED_MODE, CONFIG_SAMPLE_RATE, CONFIG_SAMPLE_BITS)) {
         log_e("Failed to initialize I2S!");
         while (1);
     }
@@ -48,6 +48,7 @@ void loop() {
     esp_i2s::i2s_read(esp_i2s::I2S_NUM_0, rec_buffer, record_size, &bytes_read, portMAX_DELAY);
 
     if (bytes_read < 1) {
+        log_e("Failed read!");
         return;
     }
     //  放大音量
