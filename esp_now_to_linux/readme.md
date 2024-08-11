@@ -49,6 +49,4 @@ iwconfig wlx90de80347481 channel 1
 
 ### esp32发送端
 
-可以串口输入内容并回车发送。
-
-或者按下boot松开发送。
+或者按下boot发送 hello。

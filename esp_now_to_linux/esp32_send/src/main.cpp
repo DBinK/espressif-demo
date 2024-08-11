@@ -5,37 +5,40 @@
 #define CHANNEL 1
 
 uint8_t peer_addr[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+SemaphoreHandle_t buttonSemaphore = nullptr;
 
 void InitESPNow() {
     WiFi.disconnect();
     WiFi.mode(WIFI_STA);
     if (esp_now_init() == 0) {
-        Serial.println("ESPNow Init Success");
+        log_i("ESPNow Init Success");
     } else {
-        Serial.println("ESPNow Init Failed");
+        log_i("ESPNow Init Failed");
         ESP.restart();
     }
-    Serial.print(" \n LOCAL MAC: ");
-    Serial.println(WiFi.macAddress());
+    log_i(" \n LOCAL MAC: %s", WiFi.macAddress().c_str());
 }
 
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 
-    Serial.printf("Sent to:%02X:%02X:%02X:%02X:%02X:%02X ", mac_addr[0], mac_addr[1], mac_addr[2],
-                  mac_addr[3], mac_addr[4], mac_addr[5]);
+    log_i("Sent to:%02X:%02X:%02X:%02X:%02X:%02X ", mac_addr[0], mac_addr[1], mac_addr[2],
+          mac_addr[3], mac_addr[4], mac_addr[5]);
     if (status == ESP_OK) {
-        Serial.println("Success");
+        log_i("Success");
     } else {
-        Serial.printf("failed with code:[%d]\n", status);
+        log_i("failed with code:[%d]\n", status);
     }
 }
 
-void setup() {
-    Serial.begin(115200);
-    while (!Serial) {}
-    pinMode(0, INPUT_PULLUP);
+void ARDUINO_ISR_ATTR buttonUp() {
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    xSemaphoreGiveFromISR(buttonSemaphore, &xHigherPriorityTaskWoken);
+}
 
-    Serial.setTimeout(100);
+void setup() {
+    pinMode(BOOT_PIN, INPUT_PULLUP);
+    attachInterrupt(BOOT_PIN, buttonUp, FALLING);
+    buttonSemaphore = xSemaphoreCreateBinary();
     // Init ESPNow with a fallback logic
     InitESPNow();
     pinMode(LED_BUILTIN, OUTPUT);
@@ -51,45 +54,22 @@ void setup() {
 
     if (addStatus == ESP_OK) {
         // Pair success
-        Serial.println("Pair success");
+        log_i("Pair success");
     } else {
-        Serial.printf("error code is %d\n", addStatus);
+        log_i("error code is %d\n", addStatus);
     }
+    disableLoopWDT();
 }
 
+
 void loop() {
-    delay(100);
-    digitalWrite(LED_BUILTIN, LOW);
-    if (digitalRead(0) == LOW) {
-        uint8_t hello[] = "hello";
-        int i = esp_now_send(peer_addr, hello, 5);
-        if (i != 0) {
-            Serial.print("not ok esp now status is:");
-            Serial.println(i);
+    for (;;) {
+        if (xSemaphoreTake(buttonSemaphore, portMAX_DELAY) == pdTRUE) {
+            uint8_t hello[] = "hello";
+            int i = esp_now_send(peer_addr, hello, 5);
+            if (i != 0) {
+                log_i("not ok esp now status is:%d", i);
+            }
         }
     }
-    static uint8_t msg[16] = {0};
-
-    size_t len = Serial.readBytesUntil('\n', msg, 16);
-    if (len < 2) {
-        return;
-    }
-
-    // 避免界面刷屏之后依然日志完全一致
-    Serial.print("length is ");
-    Serial.println(len);
-#ifdef CONTROLLER_DEBUG_OUTPUT
-    Serial.print("recv: ");
-    for (size_t i = 0; i < len; ++i) {
-        Serial.printf("%02X ", msg[i]);
-    }
-    Serial.println();
-#endif
-    int i = esp_now_send(peer_addr, msg + 1, len - 1);
-    if (i != 0) {
-        Serial.print("not ok esp now status is:");
-        Serial.println(i);
-    }
-    digitalWrite(LED_BUILTIN, HIGH);
-
 }
