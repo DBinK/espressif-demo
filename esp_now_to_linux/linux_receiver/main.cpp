@@ -2,6 +2,8 @@
 Etienne Arlaud
 */
 
+#define OPI_ZERO_SERVO
+
 #include <stdint.h>
 
 #include <assert.h>
@@ -16,6 +18,9 @@ Etienne Arlaud
 
 #include "ESPNOW_manager.h"
 #include "ESPNOW_types.h"
+#ifdef OPI_ZERO_SERVO
+#include "Servo.h"
+#endif
 
 using namespace std;
 
@@ -56,6 +61,9 @@ void callback(uint8_t src_mac[6], uint8_t *data, int len) {
     static char brightness = 1;
     writeBrightness(brightness);
     brightness = 1 - brightness;
+#ifdef OPI_ZERO_SERVO
+    rotateServoToAngle(brightness ? 45 : 135);
+#endif
 }
 
 int main(int argc, char **argv) {
@@ -70,7 +78,9 @@ int main(int argc, char **argv) {
     handler->set_recv_callback(&callback);
 
     handler->start();
-
+#ifdef OPI_ZERO_SERVO
+    initializeServo();
+#endif
     while (1) {
         std::this_thread::yield();
     }

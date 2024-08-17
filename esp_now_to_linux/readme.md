@@ -22,6 +22,18 @@ ESP-NOW 是一种由乐鑫公司定义的无连接 Wi-Fi 通信协议。在 ESP-
 
 根据需要修改callback中的内容。
 
+同时默认添加了香橙派zero2使用PWM1控制舵机的操作，如果需要使用**请根据香橙派zero2用户手册开启PWM1**。
+
+如果无线使用去掉main.cpp头部的`#define OPI_ZERO_SERVO`。
+
+
+
+由于代码很少，直接使用香橙派zero2编译问题不大，这里使用cmake项目，本人是使用clion远程到香橙派上的toolchain，加clion部署的同步，把代码映射到香橙派路径上。
+
+需要安装gcc g++ cmake 构建系统可以使用makefile或者 ninja。
+
+手动cmake:本人使用clion使用构建生成的命令如下`/usr/bin/cmake --build /home/orangepi/esp_now_lib/cmake-build-debug --target esp_now_linux -- -j 14`根据需要修改。
+
 #### USB-wifi网卡
 
 香橙派zero2自带的wifi网卡不支持monitor模式，可能是驱动或者硬件原因的限制，这里本人经过尝试不同的usb网卡
@@ -37,13 +49,25 @@ ifconfig wlx90de80347481 up
 iwconfig wlx90de80347481 channel 1 
 ```
 
+如果发现网卡正常UP同时还有IP说明它自动切回manager模式了。
+
+我们需要使用iwconfig检查。
+
+```tex
+root@orangepizero2:~# iwconfig wlx90de80347481
+wlx90de80347481  IEEE 802.11  Mode:Monitor  Frequency:2.412 GHz  Tx-Power=20 dBm
+          Retry short limit:7   RTS thr:off   Fragment thr:off
+          Power Management:off
+
+```
+
+可使用`orangepi-config`将USB-WIFI的连接断开，再次切换monitor模式。
+
 
 
 #### 运行
 
-在cmake输出目录会生成执行文件(网卡名称替换为真实的网卡名)  `./esp_now_linux wlx90de80347481`
-
-
+以root用户运行，在cmake输出目录会生成执行文件(网卡名称替换为真实的网卡名)  `./esp_now_linux wlx90de80347481`
 
 
 
