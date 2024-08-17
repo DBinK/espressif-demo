@@ -30,19 +30,17 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
     }
 }
 
-void ARDUINO_ISR_ATTR buttonUp() {
+void ARDUINO_ISR_ATTR buttonDown() {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     xSemaphoreGiveFromISR(buttonSemaphore, &xHigherPriorityTaskWoken);
 }
 
 void setup() {
     pinMode(BOOT_PIN, INPUT_PULLUP);
-    attachInterrupt(BOOT_PIN, buttonUp, FALLING);
+    attachInterrupt(BOOT_PIN, buttonDown, FALLING);
     buttonSemaphore = xSemaphoreCreateBinary();
     // Init ESPNow with a fallback logic
     InitESPNow();
-    pinMode(LED_BUILTIN, OUTPUT);
-    digitalWrite(LED_BUILTIN, HIGH);
 
     esp_now_register_send_cb(OnDataSent);
 
